@@ -5,8 +5,15 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOi
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11emVkam15bWlzYmZia2RveWV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjA2NzY1MCwiZXhwIjoyMDY3NjQzNjUwfQ.X3gFgeoZ5z-C78svQr67bWI5X6C5nsSiQPKScH1kbM8'
 
 // Debug log for environment variables
-console.log('Supabase URL:', supabaseUrl ? 'Set' : 'Missing')
-console.log('Supabase Anon Key:', supabaseAnonKey ? 'Set' : 'Missing')
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Anon Key:', supabaseAnonKey ? 'Set (length: ' + supabaseAnonKey.length + ')' : 'Missing')
+
+// Validate configuration
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase configuration!')
+  console.error('URL:', supabaseUrl)
+  console.error('Key:', supabaseAnonKey ? 'Present' : 'Missing')
+}
 
 // Client-side Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)

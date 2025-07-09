@@ -27,6 +27,11 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
     setError(null)
     setSuccess(null)
 
+    console.log('Form submitted with mode:', mode)
+    console.log('Email:', email)
+    console.log('Password length:', password.length)
+    console.log('Name:', name)
+
     try {
       if (mode === 'signup') {
         const { error } = await supabase.auth.signUp({
