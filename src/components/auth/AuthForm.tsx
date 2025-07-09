@@ -52,7 +52,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           email: email.trim().toLowerCase(),
           password,
           options: {
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/auth/callback`
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://bootcamp-reflections.vercel.app')}/auth/callback`
           }
         })
         console.log('Signup result:', { data, error })
