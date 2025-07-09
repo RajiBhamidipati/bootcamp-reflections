@@ -52,7 +52,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           email: email.trim().toLowerCase(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/auth/callback`
           }
         })
         console.log('Signup result:', { data, error })
@@ -81,15 +81,15 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center">
-          {mode === 'signin' ? 'Sign In' : 'Sign Up'}
+    <Card className="w-full max-w-md mx-auto backdrop-blur-sm bg-white/95 shadow-2xl border-0 ring-1 ring-blue-100">
+      <CardHeader className="pb-6 text-center">
+        <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
+          {mode === 'signin' ? 'Welcome back' : 'Get started'}
         </CardTitle>
-        <CardDescription className="text-center">
+        <CardDescription className="text-gray-600">
           {mode === 'signin' 
-            ? 'Welcome back to Bootcamp Reflections' 
-            : 'Create your account to start reflecting'
+            ? 'Sign in to your account' 
+            : 'Create your account to continue'
           }
         </CardDescription>
       </CardHeader>
@@ -97,7 +97,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
+              <label htmlFor="name" className="text-sm font-medium text-gray-700">
                 Name (optional)
               </label>
               <div className="relative">
@@ -105,35 +105,35 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Your name"
+                  placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg h-12 text-base"
                 />
               </div>
             </div>
           )}
 
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
+            <label htmlFor="email" className="text-sm font-medium text-gray-700">
+              Email address
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg h-12 text-base"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700">
               Password
             </label>
             <div className="relative">
@@ -141,10 +141,10 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg h-12 text-base"
                 required
                 minLength={6}
               />
@@ -165,16 +165,16 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
 
           <Button 
             type="submit" 
-            className="w-full" 
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium h-12 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" 
             disabled={loading}
           >
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {mode === 'signin' ? 'Signing in...' : 'Signing up...'}
+                {mode === 'signin' ? 'Signing in...' : 'Creating account...'}
               </>
             ) : (
-              mode === 'signin' ? 'Sign In' : 'Sign Up'
+              mode === 'signin' ? 'Sign in' : 'Create account'
             )}
           </Button>
 
@@ -185,7 +185,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
                 <button
                   type="button"
                   onClick={onToggleMode}
-                  className="text-blue-600 hover:underline"
+                  className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
                 >
                   Sign up
                 </button>
@@ -196,7 +196,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
                 <button
                   type="button"
                   onClick={onToggleMode}
-                  className="text-blue-600 hover:underline"
+                  className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
                 >
                   Sign in
                 </button>

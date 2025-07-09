@@ -28,6 +28,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Set a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      console.warn('Auth loading timeout, setting loading to false')
+      setLoading(false)
+    }, 5000)
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSupabaseUser(session?.user ?? null)
@@ -36,6 +42,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setLoading(false)
       }
+      clearTimeout(timeout)
+    }).catch(error => {
+      console.error('Error getting session:', error)
+      setLoading(false)
+      clearTimeout(timeout)
     })
 
     // Listen for auth changes
@@ -54,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       subscription.unsubscribe()
+      clearTimeout(timeout)
     }
   }, [])
 
@@ -67,7 +79,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error('Error fetching user profile:', error)
-        setUser(null)
+        // If user doesn't exist in database, create a basic user object
+        if (error.code === 'PGRST116') {
+          setUser({
+            id: userId,
+            email: supabaseUser?.email || '',
+            name: supabaseUser?.user_metadata?.name || null,
+            role: 'user',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+        } else {
+          setUser(null)
+        }
       } else {
         setUser({
           id: data.id,
@@ -80,7 +104,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error fetching user profile:', error)
-      setUser(null)
+      // Fallback: create basic user object from Supabase auth user
+      setUser({
+        id: userId,
+        email: supabaseUser?.email || '',
+        name: supabaseUser?.user_metadata?.name || null,
+        role: 'user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
     } finally {
       setLoading(false)
     }
