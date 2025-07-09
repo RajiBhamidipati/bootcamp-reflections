@@ -34,7 +34,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           password,
           options: {
             data: {
-              name: name || null,
+              name: name || email,
             }
           }
         })
@@ -42,7 +42,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
         if (error) {
           setError(error.message)
         } else {
-          setSuccess('Check your email for the confirmation link!')
+          setSuccess('Account created successfully! You can now sign in.')
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -55,7 +55,8 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
         }
       }
     } catch (error) {
-      setError('An unexpected error occurred')
+      console.error('Auth error:', error)
+      setError(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setLoading(false)
     }
