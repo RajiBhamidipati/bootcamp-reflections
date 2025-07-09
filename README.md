@@ -383,3 +383,4 @@ vercel --prod
 ---
 
 **Built with ❤️ for the bootcamp community**# Environment variables updated
+Wed  9 Jul 2025 15:30:21 BST: Force deployment with env vars
