@@ -1,4 +1,4 @@
-# Bootcamp Reflections - Production-Ready PWA
+# Bootcamp Reflections - Production-Ready PWA (LIVE)
 
 A comprehensive Next.js 14 application for bootcamp reflections with advanced features including sentiment analysis, real-time synchronization, and progressive web app capabilities.
 
