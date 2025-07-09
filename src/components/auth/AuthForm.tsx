@@ -34,15 +34,12 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
 
     try {
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
+        console.log('Attempting signup with Supabase...')
+        const { data, error } = await supabase.auth.signUp({
           email,
-          password,
-          options: {
-            data: {
-              name: name || email,
-            }
-          }
+          password
         })
+        console.log('Signup result:', { data, error })
 
         if (error) {
           setError(error.message)

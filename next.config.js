@@ -3,7 +3,7 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  disable: true, // Temporarily disable PWA
   buildExcludes: [/middleware-manifest.json$/],
   runtimeCaching: [
     {
