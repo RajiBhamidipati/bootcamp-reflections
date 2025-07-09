@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const timeout = setTimeout(() => {
       console.warn('Auth loading timeout, setting loading to false')
       setLoading(false)
-    }, 3000) // Reduced timeout to 3 seconds
+    }, 1500) // Reduced timeout to 1.5 seconds
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updated_at: new Date().toISOString()
       })
       setLoading(false)
-    }, 2000) // 2 second timeout for profile fetch
+    }, 1000) // 1 second timeout for profile fetch
 
     try {
       const { data, error } = await supabase
