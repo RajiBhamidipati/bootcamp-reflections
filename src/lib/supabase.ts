@@ -33,13 +33,8 @@ try {
 export const supabase = createClient(cleanUrl, cleanKey, {
   auth: {
     autoRefreshToken: true,
-    persistSession: false,
-    detectSessionInUrl: false
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10
-    }
+    persistSession: true,
+    detectSessionInUrl: true
   }
 })
 
