@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const timeout = setTimeout(() => {
       console.warn('Auth loading timeout, setting loading to false')
       setLoading(false)
-    }, 5000)
+    }, 3000) // Reduced timeout to 3 seconds
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -70,6 +70,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const fetchUserProfile = async (userId: string) => {
+    // Set a timeout for this specific operation
+    const profileTimeout = setTimeout(() => {
+      console.warn('Profile fetch timeout, using fallback user')
+      setUser({
+        id: userId,
+        email: supabaseUser?.email || '',
+        name: supabaseUser?.user_metadata?.name || null,
+        role: 'user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      setLoading(false)
+    }, 2000) // 2 second timeout for profile fetch
+
     try {
       const { data, error } = await supabase
         .from('users')
@@ -77,21 +91,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('id', userId)
         .single()
 
+      clearTimeout(profileTimeout)
+
       if (error) {
         console.error('Error fetching user profile:', error)
-        // If user doesn't exist in database, create a basic user object
-        if (error.code === 'PGRST116') {
-          setUser({
-            id: userId,
-            email: supabaseUser?.email || '',
-            name: supabaseUser?.user_metadata?.name || null,
-            role: 'user',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-        } else {
-          setUser(null)
-        }
+        // Always fallback to basic user object
+        setUser({
+          id: userId,
+          email: supabaseUser?.email || '',
+          name: supabaseUser?.user_metadata?.name || null,
+          role: 'user',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
       } else {
         setUser({
           id: data.id,
@@ -103,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
       }
     } catch (error) {
+      clearTimeout(profileTimeout)
       console.error('Error fetching user profile:', error)
       // Fallback: create basic user object from Supabase auth user
       setUser({
