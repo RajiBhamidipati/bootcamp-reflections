@@ -27,28 +27,44 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
     setError(null)
     setSuccess(null)
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address')
+      setLoading(false)
+      return
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long')
+      setLoading(false)
+      return
+    }
+
     console.log('Form submitted with mode:', mode)
     console.log('Email:', email)
     console.log('Password length:', password.length)
-    console.log('Name:', name)
 
     try {
       if (mode === 'signup') {
         console.log('Attempting signup with Supabase...')
         const { data, error } = await supabase.auth.signUp({
-          email,
-          password
+          email: email.trim().toLowerCase(),
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`
+          }
         })
         console.log('Signup result:', { data, error })
 
         if (error) {
           setError(error.message)
         } else {
-          setSuccess('Account created successfully! You can now sign in.')
+          setSuccess('Account created successfully! Please check your email to confirm your account.')
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: email.trim().toLowerCase(),
           password,
         })
 
