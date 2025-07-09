@@ -1,26 +1,45 @@
 import { createClient } from '@supabase/supabase-js'
 
+// Use environment variables or fallback to hardcoded values
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://muzedjmymisbfbkdoyev.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11emVkam15bWlzYmZia2RveWV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNjc2NTAsImV4cCI6MjA2NzY0MzY1MH0.v6XiiOU6W_A_Ujzc20bScgo7owS3XtjOJWfcSID_CsI'
+
+// Clean and validate the URL
+const cleanUrl = supabaseUrl.trim()
+const cleanKey = supabaseAnonKey.trim()
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11emVkam15bWlzYmZia2RveWV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjA2NzY1MCwiZXhwIjoyMDY3NjQzNjUwfQ.X3gFgeoZ5z-C78svQr67bWI5X6C5nsSiQPKScH1kbM8'
 
 // Debug log for environment variables
-console.log('Supabase URL:', supabaseUrl)
-console.log('Supabase Anon Key:', supabaseAnonKey ? 'Set (length: ' + supabaseAnonKey.length + ')' : 'Missing')
+console.log('Supabase URL:', cleanUrl)
+console.log('Supabase Anon Key:', cleanKey ? 'Set (length: ' + cleanKey.length + ')' : 'Missing')
 
 // Validate configuration
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!cleanUrl || !cleanKey) {
   console.error('Missing Supabase configuration!')
-  console.error('URL:', supabaseUrl)
-  console.error('Key:', supabaseAnonKey ? 'Present' : 'Missing')
+  console.error('URL:', cleanUrl)
+  console.error('Key:', cleanKey ? 'Present' : 'Missing')
+  throw new Error('Supabase configuration is invalid')
 }
 
-// Client-side Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Validate URL format
+try {
+  new URL(cleanUrl)
+} catch (e) {
+  console.error('Invalid Supabase URL:', cleanUrl)
+  throw new Error('Invalid Supabase URL format')
+}
+
+// Client-side Supabase client with minimal configuration
+export const supabase = createClient(cleanUrl, cleanKey, {
   auth: {
     autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
+    persistSession: false,
+    detectSessionInUrl: false
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 })
 
