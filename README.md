@@ -382,4 +382,4 @@ vercel --prod
 
 ---
 
-**Built with ❤️ for the bootcamp community**
+**Built with ❤️ for the bootcamp community**# Environment variables updated
