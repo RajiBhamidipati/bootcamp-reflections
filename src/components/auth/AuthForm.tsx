@@ -81,70 +81,70 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto backdrop-blur-sm bg-white/95 shadow-2xl border-0 ring-1 ring-blue-100">
-      <CardHeader className="pb-6 text-center">
-        <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
+    <div className="w-full max-w-md mx-auto bg-white">
+      <div className="pb-8 mb-8 text-center">
+        <h1 className="text-2xl font-light text-gray-900 mb-2">
           {mode === 'signin' ? 'Welcome back' : 'Get started'}
-        </CardTitle>
-        <CardDescription className="text-gray-600">
+        </h1>
+        <p className="text-sm text-gray-500">
           {mode === 'signin' 
             ? 'Sign in to your account' 
             : 'Create your account to continue'
           }
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        </p>
+      </div>
+      <div>
+        <form onSubmit={handleSubmit} className="space-y-8">
           {mode === 'signup' && (
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-gray-700">
+            <div className="space-y-4">
+              <label htmlFor="name" className="text-base font-medium text-gray-900">
                 Name (optional)
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input
                   id="name"
                   type="text"
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg h-12 text-base"
+                  className="pl-12 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg h-12 text-base"
                 />
               </div>
             </div>
           )}
 
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">
+          <div className="space-y-4">
+            <label htmlFor="email" className="text-base font-medium text-gray-900">
               Email address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg h-12 text-base"
+                className="pl-12 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg h-12 text-base"
                 required
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">
+          <div className="space-y-4">
+            <label htmlFor="password" className="text-base font-medium text-gray-900">
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 id="password"
                 type="password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg h-12 text-base"
+                className="pl-12 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg h-12 text-base"
                 required
                 minLength={6}
               />
@@ -152,40 +152,40 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           </div>
 
           {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
           )}
 
           {success && (
-            <Alert>
-              <AlertDescription>{success}</AlertDescription>
-            </Alert>
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-700">{success}</p>
+            </div>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium h-12 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" 
+          <button
+            type="submit"
             disabled={loading}
+            className="w-full bg-gray-900 text-white py-4 rounded-lg font-medium text-base hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
-              <>
+              <span className="flex items-center justify-center">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {mode === 'signin' ? 'Signing in...' : 'Creating account...'}
-              </>
+              </span>
             ) : (
               mode === 'signin' ? 'Sign in' : 'Create account'
             )}
-          </Button>
+          </button>
 
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-gray-500">
             {mode === 'signin' ? (
               <>
                 Don&apos;t have an account?{' '}
                 <button
                   type="button"
                   onClick={onToggleMode}
-                  className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+                  className="text-gray-900 hover:text-gray-700 font-medium hover:underline transition-colors"
                 >
                   Sign up
                 </button>
@@ -196,7 +196,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
                 <button
                   type="button"
                   onClick={onToggleMode}
-                  className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+                  className="text-gray-900 hover:text-gray-700 font-medium hover:underline transition-colors"
                 >
                   Sign in
                 </button>
@@ -204,7 +204,7 @@ export default function AuthForm({ mode, onToggleMode }: AuthFormProps) {
             )}
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

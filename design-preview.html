@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflection Form - Modern Design Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .slider-track {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            position: relative;
+        }
+        .slider-fill {
+            height: 100%;
+            background: #111827;
+            border-radius: 9999px;
+            width: 50%;
+        }
+        .slider-thumb {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 2px solid #111827;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-sm">
+        <!-- Header Section -->
+        <div class="pb-8 mb-8 border-b border-gray-100 p-8">
+            <h1 class="text-2xl font-light text-gray-900 mb-2">Daily Reflection</h1>
+            <p class="text-sm text-gray-500">Thursday, July 10, 2025</p>
+        </div>
+
+        <!-- Form Content -->
+        <div class="px-8 pb-8 space-y-12">
+            <!-- Day Type Dropdown -->
+            <div class="space-y-4">
+                <label class="text-base font-medium text-gray-900">Day Type</label>
+                <div class="relative">
+                    <select class="bg-white border-gray-200 focus:border-gray-400 focus:ring-0 h-12 text-base w-full px-3 rounded-md border">
+                        <option>Bootcamp Day</option>
+                        <option>Apply at Work Day</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Mood Sliders Section -->
+            <div class="space-y-1 relative">
+                <h2 class="text-xl font-light text-gray-900 mb-8">How are you feeling?</h2>
+                <div class="space-y-1">
+                    
+                    <!-- Overall Mood Slider -->
+                    <div class="space-y-4 py-6 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="text-gray-400">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </div>
+                                <label class="text-base font-medium text-gray-900">Overall Mood</label>
+                            </div>
+                            <div class="text-2xl font-light text-gray-900">7</div>
+                        </div>
+                        <div class="px-1">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 70%"></div>
+                                <div class="slider-thumb" style="left: 70%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-400 mt-3">
+                                <span>1</span>
+                                <span>10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Energy Level Slider -->
+                    <div class="space-y-4 py-6 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="text-gray-400">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                                <label class="text-base font-medium text-gray-900">Energy Level</label>
+                            </div>
+                            <div class="text-2xl font-light text-gray-900">5</div>
+                        </div>
+                        <div class="px-1">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 50%"></div>
+                                <div class="slider-thumb" style="left: 50%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-400 mt-3">
+                                <span>1</span>
+                                <span>10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stress Level Slider -->
+                    <div class="space-y-4 py-6 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="text-gray-400">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                    </svg>
+                                </div>
+                                <label class="text-base font-medium text-gray-900">Stress Level</label>
+                            </div>
+                            <div class="text-2xl font-light text-gray-900">3</div>
+                        </div>
+                        <div class="px-1">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 30%"></div>
+                                <div class="slider-thumb" style="left: 30%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-400 mt-3">
+                                <span>1</span>
+                                <span>10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motivation Slider -->
+                    <div class="space-y-4 py-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="text-gray-400">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <label class="text-base font-medium text-gray-900">Motivation</label>
+                            </div>
+                            <div class="text-2xl font-light text-gray-900">8</div>
+                        </div>
+                        <div class="px-1">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 80%"></div>
+                                <div class="slider-thumb" style="left: 80%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-400 mt-3">
+                                <span>1</span>
+                                <span>10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reflection Section -->
+            <div class="space-y-10">
+                <h2 class="text-xl font-light text-gray-900">Reflection</h2>
+                <div class="space-y-8">
+                    <div>
+                        <label class="text-base font-medium text-gray-900 mb-4 block">Daily Highlight</label>
+                        <textarea class="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none w-full px-3 py-2 rounded-md border" placeholder="What was the best part of your day?"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="text-base font-medium text-gray-900 mb-4 block">Challenges Faced</label>
+                        <textarea class="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none w-full px-3 py-2 rounded-md border" placeholder="What challenges did you encounter?"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="text-base font-medium text-gray-900 mb-4 block">Learning Progress</label>
+                        <textarea class="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none w-full px-3 py-2 rounded-md border" placeholder="What did you learn today?"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="text-base font-medium text-gray-900 mb-4 block">Goals for Tomorrow</label>
+                        <textarea class="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none w-full px-3 py-2 rounded-md border" placeholder="What do you want to accomplish tomorrow?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gratitude Section -->
+            <div>
+                <label class="text-base font-medium text-gray-900 mb-4 block">Gratitude</label>
+                <textarea class="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none w-full px-3 py-2 rounded-md border" placeholder="What are you grateful for today?"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-8 border-t border-gray-100">
+                <button class="w-full bg-gray-900 text-white py-4 rounded-lg font-medium text-base hover:bg-gray-800 transition-colors">
+                    Save Reflection
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
