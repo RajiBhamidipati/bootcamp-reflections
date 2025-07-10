@@ -26,7 +26,7 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
   const [success, setSuccess] = useState<string | null>(null)
   
   const [formData, setFormData] = useState<ReflectionContent>({
-    phase: 'week-1-8',
+    phase: 'bootcamp-day',
     overall_mood: 5,
     energy_level: 5,
     stress_level: 5,
@@ -107,7 +107,7 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
       
       // Reset form
       setFormData({
-        phase: 'week-1-8',
+        phase: 'bootcamp-day',
         overall_mood: 5,
         energy_level: 5,
         stress_level: 5,
@@ -199,21 +199,18 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
       </div>
       <form onSubmit={handleSubmit} className="space-y-12">
           <div className="space-y-4">
-            <label className="text-base font-medium text-gray-900">Phase</label>
+            <label className="text-base font-medium text-gray-900">Day Type</label>
             <div className="relative z-20">
               <Select
                 value={formData.phase}
                 onValueChange={(value) => handleInputChange('phase', value)}
               >
                 <SelectTrigger className="bg-white border-gray-200 focus:border-gray-400 focus:ring-0 h-12 text-base">
-                  <SelectValue placeholder="Select your current phase" />
+                  <SelectValue placeholder="Select day type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pre-bootcamp">Pre-Bootcamp</SelectItem>
-                  <SelectItem value="week-1-8">Weeks 1-8 (Foundation)</SelectItem>
-                  <SelectItem value="week-9-16">Weeks 9-16 (Intermediate)</SelectItem>
-                  <SelectItem value="week-17-24">Weeks 17-24 (Advanced)</SelectItem>
-                  <SelectItem value="post-graduation">Post-Graduation</SelectItem>
+                  <SelectItem value="bootcamp-day">Bootcamp Day</SelectItem>
+                  <SelectItem value="apply-at-work-day">Apply at Work Day</SelectItem>
                 </SelectContent>
               </Select>
             </div>
