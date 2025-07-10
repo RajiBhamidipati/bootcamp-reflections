@@ -9,11 +9,15 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const cleanUrl = supabaseUrl?.trim()
 const cleanKey = supabaseAnonKey?.trim()
 
-// Debug log for environment variables (safe logging)
-if (process.env.NODE_ENV === 'development') {
-  console.log('Supabase URL:', cleanUrl)
-  console.log('Supabase Anon Key:', cleanKey ? 'Set (length: ' + cleanKey.length + ')' : 'Missing')
-}
+// Debug log for environment variables (including build time)
+console.log('=== Supabase Config Debug ===')
+console.log('NODE_ENV:', process.env.NODE_ENV)
+console.log('VERCEL:', process.env.VERCEL)
+console.log('Supabase URL exists:', !!supabaseUrl)
+console.log('Supabase Key exists:', !!supabaseAnonKey)
+console.log('Clean URL:', cleanUrl || 'MISSING')
+console.log('Clean Key length:', cleanKey?.length || 'MISSING')
+console.log('==============================')
 
 // Validate configuration - but allow build time to proceed
 if (!cleanUrl || !cleanKey) {
