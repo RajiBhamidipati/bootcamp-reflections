@@ -158,14 +158,19 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
     icon: React.ReactNode,
     color: string
   ) => (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <div className={`p-1 rounded-full ${color}`}>
-          {icon}
+    <div className="space-y-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className={`p-1 rounded-full ${color}`}>
+            {icon}
+          </div>
+          <label className="text-sm font-medium text-gray-700">{label}</label>
         </div>
-        <label className="text-sm font-medium">{label}</label>
+        <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+          {String(formData[field])}
+        </div>
       </div>
-      <div className="px-4">
+      <div className="px-2">
         <Slider
           value={[formData[field] as number]}
           onValueChange={(value) => handleSliderChange(field as string, value)}
@@ -174,9 +179,9 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
           step={1}
           className="w-full"
         />
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <div className="flex justify-between text-xs text-gray-500 mt-2">
           <span>1 (Low)</span>
-          <span className="font-medium">{String(formData[field])}</span>
+          <span>5</span>
           <span>10 (High)</span>
         </div>
       </div>
