@@ -18,8 +18,18 @@ interface ReflectionTypeChartProps {
   height?: number
 }
 
+interface DoughnutChartData {
+  labels: string[]
+  datasets: {
+    data: number[]
+    backgroundColor: string[]
+    borderColor: string[]
+    borderWidth: number
+  }[]
+}
+
 export default function ReflectionTypeChart({ data, title = 'Reflection Types', height = 400 }: ReflectionTypeChartProps) {
-  const [chartData, setChartData] = useState<any>(null)
+  const [chartData, setChartData] = useState<DoughnutChartData | null>(null)
 
   useEffect(() => {
     if (data.length === 0) return
@@ -72,7 +82,7 @@ export default function ReflectionTypeChart({ data, title = 'Reflection Types', 
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function(context: { dataset: { data: number[] }; parsed: number; label: string }) {
             const total = context.dataset.data.reduce((sum: number, value: number) => sum + value, 0)
             const percentage = ((context.parsed / total) * 100).toFixed(1)
             return `${context.label}: ${context.parsed} (${percentage}%)`

@@ -49,7 +49,7 @@ export interface ReflectionContent {
   collaboration_rating?: number
   
   // Custom fields for different phases
-  custom_fields?: Record<string, any>
+  custom_fields?: Record<string, unknown>
 }
 
 export interface AnalyticsData {

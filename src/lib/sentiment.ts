@@ -1,5 +1,5 @@
 import { SentimentAnalysis } from '@/types'
-// @ts-ignore
+// @ts-expect-error
 import Sentiment from 'sentiment'
 
 const sentiment = new Sentiment()
@@ -20,7 +20,7 @@ export function analyzeSentiment(text: string): SentimentAnalysis {
   }
 }
 
-function calculateEmotions(text: string, tokens: any[]): SentimentAnalysis['emotions'] {
+function calculateEmotions(text: string, _tokens: unknown[]): SentimentAnalysis['emotions'] {
   const lowerText = text.toLowerCase()
   
   // Basic emotion keywords

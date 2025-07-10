@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
-import { Reflection, AnalyticsData } from '@/types'
+import { Reflection, AnalyticsData, NotificationData } from '@/types'
 
 export function useRealTimeReflections() {
   const { user } = useAuth()
@@ -36,7 +36,7 @@ export function useRealTimeReflections() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [user])
+  }, [user, fetchReflections])
 
   const fetchReflections = async () => {
     try {
@@ -59,7 +59,7 @@ export function useRealTimeReflections() {
     }
   }
 
-  const handleRealTimeUpdate = (payload: any) => {
+  const handleRealTimeUpdate = (payload: { eventType: string; new: Reflection; old: Reflection }) => {
     switch (payload.eventType) {
       case 'INSERT':
         setReflections(prev => [payload.new, ...prev])
@@ -180,7 +180,7 @@ export function useRealTimeAnalytics() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [user])
+  }, [user, fetchReflections])
 
   const fetchAnalytics = async () => {
     try {
@@ -203,7 +203,7 @@ export function useRealTimeAnalytics() {
     }
   }
 
-  const handleRealTimeUpdate = (payload: any) => {
+  const handleRealTimeUpdate = (payload: { eventType: string; new: AnalyticsData; old: AnalyticsData }) => {
     switch (payload.eventType) {
       case 'INSERT':
         setAnalytics(prev => [payload.new, ...prev])
@@ -232,7 +232,7 @@ export function useRealTimeAnalytics() {
 
 export function useRealTimeNotifications() {
   const { user } = useAuth()
-  const [notifications, setNotifications] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<NotificationData[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
@@ -262,7 +262,7 @@ export function useRealTimeNotifications() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [user])
+  }, [user, fetchReflections])
 
   const fetchNotifications = async () => {
     try {
@@ -286,7 +286,7 @@ export function useRealTimeNotifications() {
     }
   }
 
-  const handleRealTimeUpdate = (payload: any) => {
+  const handleRealTimeUpdate = (payload: { eventType: string; new: NotificationData; old: NotificationData }) => {
     switch (payload.eventType) {
       case 'INSERT':
         setNotifications(prev => [payload.new, ...prev])

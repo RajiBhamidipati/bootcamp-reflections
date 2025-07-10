@@ -22,7 +22,7 @@ function AuthCallbackContent() {
           console.log('Auth callback successful:', data.session)
           
           // Check if user exists in our database, if not create them
-          const { data: userData, error: userError } = await supabase
+          const { error: userError } = await supabase
             .from('users')
             .select('*')
             .eq('id', data.session.user.id)

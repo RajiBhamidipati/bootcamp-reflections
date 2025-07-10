@@ -29,8 +29,19 @@ interface SentimentChartProps {
   height?: number
 }
 
+interface BarChartData {
+  labels: string[]
+  datasets: {
+    label: string
+    data: number[]
+    backgroundColor: string[]
+    borderColor: string[]
+    borderWidth: number
+  }[]
+}
+
 export default function SentimentChart({ data, title = 'Sentiment Analysis', height = 400 }: SentimentChartProps) {
-  const [chartData, setChartData] = useState<any>(null)
+  const [chartData, setChartData] = useState<BarChartData | null>(null)
 
   useEffect(() => {
     if (data.length === 0) return
@@ -39,7 +50,6 @@ export default function SentimentChart({ data, title = 'Sentiment Analysis', hei
     const labels = sortedData.map(d => formatDate(d.date))
     
     const sentimentData = sortedData.map(d => d.sentiment_score)
-    const reflectionCounts = sortedData.map(d => d.reflection_count)
 
     setChartData({
       labels,
@@ -78,7 +88,7 @@ export default function SentimentChart({ data, title = 'Sentiment Analysis', hei
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function(context: { dataset: { label: string }; parsed: { y: number } }) {
             const value = context.parsed.y
             let sentiment = 'Neutral'
             if (value > 0.3) sentiment = 'Very Positive'

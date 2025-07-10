@@ -33,8 +33,22 @@ interface MoodChartProps {
   height?: number
 }
 
+interface ChartDataset {
+  label: string
+  data: number[]
+  borderColor: string
+  backgroundColor: string
+  fill: boolean
+  tension: number
+}
+
+interface ChartData {
+  labels: string[]
+  datasets: ChartDataset[]
+}
+
 export default function MoodChart({ data, title = 'Mood Trends', height = 400 }: MoodChartProps) {
-  const [chartData, setChartData] = useState<any>(null)
+  const [chartData, setChartData] = useState<ChartData | null>(null)
 
   useEffect(() => {
     if (data.length === 0) return
@@ -90,7 +104,7 @@ export default function MoodChart({ data, title = 'Mood Trends', height = 400 }:
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function(context: { dataset: { label: string }; parsed: { y: number } }) {
             return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}/10`
           }
         }

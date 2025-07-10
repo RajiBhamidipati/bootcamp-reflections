@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Reflection, AnalyticsData, User } from '@/types'
@@ -8,21 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { formatDate, formatDateTime } from '@/lib/utils'
-import { generateInsights } from '@/lib/sentiment'
+import { formatDate } from '@/lib/utils'
 import { 
   Users, 
   BookOpen, 
   TrendingUp, 
   Download, 
-  Calendar,
   BarChart3,
   Heart,
   Brain,
   Zap,
   Target,
-  FileText,
-  Settings,
   Search
 } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
@@ -49,9 +45,9 @@ export default function AdminDashboard() {
     if (user?.role === 'admin') {
       fetchAdminData()
     }
-  }, [user])
+  }, [user, fetchAdminData])
 
-  const fetchAdminData = async () => {
+  const fetchAdminData = useCallback(async () => {
     try {
       await Promise.all([
         fetchStats(),
@@ -64,7 +60,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const fetchStats = async () => {
     try {
@@ -213,7 +209,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You don't have permission to view this page.</p>
+          <p className="text-gray-600">You don&apos;t have permission to view this page.</p>
         </div>
       </div>
     )
