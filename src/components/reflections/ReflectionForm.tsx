@@ -200,29 +200,32 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Phase Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Bootcamp Phase</label>
-            <Select
-              value={formData.phase}
-              onValueChange={(value) => handleInputChange('phase', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select your current phase" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pre-bootcamp">Pre-Bootcamp</SelectItem>
-                <SelectItem value="week-1-8">Weeks 1-8 (Foundation)</SelectItem>
-                <SelectItem value="week-9-16">Weeks 9-16 (Intermediate)</SelectItem>
-                <SelectItem value="week-17-24">Weeks 17-24 (Advanced)</SelectItem>
-                <SelectItem value="post-graduation">Post-Graduation</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-3 mb-8">
+            <label className="text-sm font-medium text-gray-700">Bootcamp Phase</label>
+            <div className="relative z-20">
+              <Select
+                value={formData.phase}
+                onValueChange={(value) => handleInputChange('phase', value)}
+              >
+                <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                  <SelectValue placeholder="Select your current phase" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pre-bootcamp">Pre-Bootcamp</SelectItem>
+                  <SelectItem value="week-1-8">Weeks 1-8 (Foundation)</SelectItem>
+                  <SelectItem value="week-9-16">Weeks 9-16 (Intermediate)</SelectItem>
+                  <SelectItem value="week-17-24">Weeks 17-24 (Advanced)</SelectItem>
+                  <SelectItem value="post-graduation">Post-Graduation</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Mood Sliders */}
-          <div className="space-y-4">
+          <div className="space-y-6 relative z-10">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">How are you feeling today?</h3>
             {renderMoodSlider('Overall Mood', 'overall_mood', <Heart className="h-4 w-4" />, 'bg-red-100')}
             {renderMoodSlider('Energy Level', 'energy_level', <Zap className="h-4 w-4" />, 'bg-yellow-100')}
             {renderMoodSlider('Stress Level', 'stress_level', <Brain className="h-4 w-4" />, 'bg-purple-100')}
@@ -231,7 +234,8 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
 
           {/* Text Fields - Context Aware */}
           {(type === 'daily' || type === 'mood') && (
-            <div className="space-y-4">
+            <div className="space-y-6 mt-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Reflection Questions</h3>
               <div>
                 <label className="text-sm font-medium">Daily Highlight</label>
                 <Textarea
