@@ -21,16 +21,16 @@ if (!cleanUrl || !cleanKey) {
   console.error('URL:', cleanUrl)
   console.error('Key:', cleanKey ? 'Present' : 'Missing')
   
-  // Only throw error at runtime when actually being used
-  // During build process, we'll use fallback values
-  const isBuildTime = process.env.NODE_ENV !== 'production' && typeof window === 'undefined'
+  // During any build process (CI, local, or Vercel), use fallback values
+  // Only throw error when actually running in production with users
+  const isRuntimeProduction = process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
   
-  if (!isBuildTime) {
+  if (isRuntimeProduction) {
     throw new Error('Supabase configuration is invalid')
   }
   
-  // Provide fallback values for build time
-  console.warn('Using fallback Supabase configuration for build')
+  // Provide fallback values for build time and server-side rendering
+  console.warn('Using fallback Supabase configuration for build/SSR')
 }
 
 // Validate URL format - only if URL exists and not during build
@@ -39,8 +39,8 @@ if (cleanUrl) {
     new URL(cleanUrl)
   } catch {
     console.error('Invalid Supabase URL:', cleanUrl)
-    const isBuildTime = process.env.NODE_ENV !== 'production' && typeof window === 'undefined'
-    if (!isBuildTime) {
+    const isRuntimeProduction = process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
+    if (isRuntimeProduction) {
       throw new Error('Invalid Supabase URL format')
     }
   }
