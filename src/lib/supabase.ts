@@ -15,24 +15,40 @@ if (process.env.NODE_ENV === 'development') {
   console.log('Supabase Anon Key:', cleanKey ? 'Set (length: ' + cleanKey.length + ')' : 'Missing')
 }
 
-// Validate configuration
+// Validate configuration - but allow build time to proceed
 if (!cleanUrl || !cleanKey) {
   console.error('Missing Supabase configuration!')
   console.error('URL:', cleanUrl)
   console.error('Key:', cleanKey ? 'Present' : 'Missing')
-  throw new Error('Supabase configuration is invalid')
+  
+  // Only throw error at runtime, not during build
+  if (typeof window !== 'undefined' || process.env.NODE_ENV === 'production') {
+    throw new Error('Supabase configuration is invalid')
+  }
+  
+  // Provide fallback values for build time
+  console.warn('Using fallback Supabase configuration for build')
 }
 
-// Validate URL format
-try {
-  new URL(cleanUrl)
-} catch {
-  console.error('Invalid Supabase URL:', cleanUrl)
-  throw new Error('Invalid Supabase URL format')
+// Validate URL format - only if URL exists
+if (cleanUrl) {
+  try {
+    new URL(cleanUrl)
+  } catch {
+    console.error('Invalid Supabase URL:', cleanUrl)
+    if (typeof window !== 'undefined' || process.env.NODE_ENV === 'production') {
+      throw new Error('Invalid Supabase URL format')
+    }
+  }
 }
+
+// Use fallback values for build time if needed
+const buildUrl = cleanUrl || 'https://placeholder.supabase.co'
+const buildKey = cleanKey || 'placeholder-key'
+const buildServiceKey = supabaseServiceRoleKey || 'placeholder-service-key'
 
 // Client-side Supabase client with minimal configuration
-export const supabase = createClient(cleanUrl, cleanKey, {
+export const supabase = createClient(buildUrl, buildKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
@@ -41,7 +57,7 @@ export const supabase = createClient(cleanUrl, cleanKey, {
 })
 
 // Admin client with service role key (for API routes only)
-export const supabaseAdmin = createClient(cleanUrl!, supabaseServiceRoleKey!, {
+export const supabaseAdmin = createClient(buildUrl, buildServiceKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
