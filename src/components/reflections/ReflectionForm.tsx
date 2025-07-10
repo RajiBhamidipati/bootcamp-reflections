@@ -158,19 +158,19 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
     icon: React.ReactNode,
     color: string
   ) => (
-    <div className="space-y-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+    <div className="space-y-4 py-6 border-b border-gray-100 last:border-b-0">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className={`p-1 rounded-full ${color}`}>
+        <div className="flex items-center gap-3">
+          <div className="text-gray-400">
             {icon}
           </div>
-          <label className="text-sm font-medium text-gray-700">{label}</label>
+          <label className="text-base font-medium text-gray-900">{label}</label>
         </div>
-        <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+        <div className="text-2xl font-light text-gray-900">
           {String(formData[field])}
         </div>
       </div>
-      <div className="px-2">
+      <div className="px-1">
         <Slider
           value={[formData[field] as number]}
           onValueChange={(value) => handleSliderChange(field as string, value)}
@@ -179,37 +179,33 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
           step={1}
           className="w-full"
         />
-        <div className="flex justify-between text-xs text-gray-500 mt-2">
-          <span>1 (Low)</span>
-          <span>5</span>
-          <span>10 (High)</span>
+        <div className="flex justify-between text-xs text-gray-400 mt-3">
+          <span>1</span>
+          <span>10</span>
         </div>
       </div>
     </div>
   )
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {type === 'daily' && <Heart className="h-5 w-5 text-red-500" />}
-          {type === 'weekly' && <Brain className="h-5 w-5 text-blue-500" />}
-          {type === 'project' && <Target className="h-5 w-5 text-green-500" />}
-          {type === 'mood' && <Zap className="h-5 w-5 text-yellow-500" />}
+    <div className="max-w-2xl mx-auto bg-white">
+      <div className="pb-8 mb-8 border-b border-gray-100">
+        <h1 className="text-2xl font-light text-gray-900 mb-2">
           {type.charAt(0).toUpperCase() + type.slice(1)} Reflection
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Phase Selection */}
-          <div className="space-y-3 mb-8">
-            <label className="text-sm font-medium text-gray-700">Bootcamp Phase</label>
+        </h1>
+        <p className="text-sm text-gray-500">
+          {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        </p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-12">
+          <div className="space-y-4">
+            <label className="text-base font-medium text-gray-900">Phase</label>
             <div className="relative z-20">
               <Select
                 value={formData.phase}
                 onValueChange={(value) => handleInputChange('phase', value)}
               >
-                <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <SelectTrigger className="bg-white border-gray-200 focus:border-gray-400 focus:ring-0 h-12 text-base">
                   <SelectValue placeholder="Select your current phase" />
                 </SelectTrigger>
                 <SelectContent>
@@ -223,158 +219,163 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
             </div>
           </div>
 
-          {/* Mood Sliders */}
-          <div className="space-y-6 relative z-10">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">How are you feeling today?</h3>
-            {renderMoodSlider('Overall Mood', 'overall_mood', <Heart className="h-4 w-4" />, 'bg-red-100')}
-            {renderMoodSlider('Energy Level', 'energy_level', <Zap className="h-4 w-4" />, 'bg-yellow-100')}
-            {renderMoodSlider('Stress Level', 'stress_level', <Brain className="h-4 w-4" />, 'bg-purple-100')}
-            {renderMoodSlider('Motivation', 'motivation', <Target className="h-4 w-4" />, 'bg-green-100')}
+          <div className="space-y-1 relative z-10">
+            <h2 className="text-xl font-light text-gray-900 mb-8">How are you feeling?</h2>
+            <div className="space-y-1">
+              {renderMoodSlider('Overall Mood', 'overall_mood', <Heart className="h-5 w-5" />, '')}
+              {renderMoodSlider('Energy Level', 'energy_level', <Zap className="h-5 w-5" />, '')}
+              {renderMoodSlider('Stress Level', 'stress_level', <Brain className="h-5 w-5" />, '')}
+              {renderMoodSlider('Motivation', 'motivation', <Target className="h-5 w-5" />, '')}
+            </div>
           </div>
 
-          {/* Text Fields - Context Aware */}
           {(type === 'daily' || type === 'mood') && (
-            <div className="space-y-6 mt-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Reflection Questions</h3>
-              <div>
-                <label className="text-sm font-medium">Daily Highlight</label>
-                <Textarea
-                  value={formData.daily_highlight}
-                  onChange={(e) => handleInputChange('daily_highlight', e.target.value)}
-                  placeholder="What was the best part of your day?"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Challenges Faced</label>
-                <Textarea
-                  value={formData.challenges_faced}
-                  onChange={(e) => handleInputChange('challenges_faced', e.target.value)}
-                  placeholder="What challenges did you encounter?"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Learning Progress</label>
-                <Textarea
-                  value={formData.learning_progress}
-                  onChange={(e) => handleInputChange('learning_progress', e.target.value)}
-                  placeholder="What did you learn today?"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Goals for Tomorrow</label>
-                <Textarea
-                  value={formData.goals_tomorrow}
-                  onChange={(e) => handleInputChange('goals_tomorrow', e.target.value)}
-                  placeholder="What do you want to accomplish tomorrow?"
-                  className="mt-1"
-                />
+            <div className="space-y-10">
+              <h2 className="text-xl font-light text-gray-900">Reflection</h2>
+              <div className="space-y-8">
+                <div>
+                  <label className="text-base font-medium text-gray-900 mb-4 block">Daily Highlight</label>
+                  <Textarea
+                    value={formData.daily_highlight}
+                    onChange={(e) => handleInputChange('daily_highlight', e.target.value)}
+                    placeholder="What was the best part of your day?"
+                    className="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-base font-medium text-gray-900 mb-4 block">Challenges Faced</label>
+                  <Textarea
+                    value={formData.challenges_faced}
+                    onChange={(e) => handleInputChange('challenges_faced', e.target.value)}
+                    placeholder="What challenges did you encounter?"
+                    className="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-base font-medium text-gray-900 mb-4 block">Learning Progress</label>
+                  <Textarea
+                    value={formData.learning_progress}
+                    onChange={(e) => handleInputChange('learning_progress', e.target.value)}
+                    placeholder="What did you learn today?"
+                    className="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-base font-medium text-gray-900 mb-4 block">Goals for Tomorrow</label>
+                  <Textarea
+                    value={formData.goals_tomorrow}
+                    onChange={(e) => handleInputChange('goals_tomorrow', e.target.value)}
+                    placeholder="What do you want to accomplish tomorrow?"
+                    className="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none"
+                  />
+                </div>
               </div>
             </div>
           )}
 
           {type === 'weekly' && (
-            <div className="space-y-4">
+            <div className="space-y-10">
               <div>
-                <label className="text-sm font-medium">Weekly Goals Met</label>
-                <div className="mt-2">
+                <label className="text-base font-medium text-gray-900 mb-4 block">Weekly Goals</label>
+                <div className="mt-4">
                   <label className="flex items-center">
                     <input
                       type="checkbox"
                       checked={formData.weekly_goals_met}
                       onChange={(e) => handleInputChange('weekly_goals_met', e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-gray-900 focus:ring-0 focus:ring-offset-0 w-4 h-4"
                     />
-                    <span className="ml-2 text-sm">I met my weekly goals</span>
+                    <span className="ml-3 text-base text-gray-900">I met my weekly goals</span>
                   </label>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium">Biggest Learning</label>
+                <label className="text-base font-medium text-gray-900 mb-4 block">Biggest Learning</label>
                 <Textarea
                   value={formData.biggest_learning}
                   onChange={(e) => handleInputChange('biggest_learning', e.target.value)}
                   placeholder="What was your biggest learning this week?"
-                  className="mt-1"
+                  className="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Areas for Improvement</label>
+                <label className="text-base font-medium text-gray-900 mb-4 block">Areas for Improvement</label>
                 <Textarea
                   value={formData.areas_for_improvement}
                   onChange={(e) => handleInputChange('areas_for_improvement', e.target.value)}
                   placeholder="What areas would you like to improve?"
-                  className="mt-1"
+                  className="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none"
                 />
               </div>
             </div>
           )}
 
           {type === 'project' && (
-            <div className="space-y-4">
+            <div className="space-y-10">
               <div>
-                <label className="text-sm font-medium">Project Name</label>
+                <label className="text-base font-medium text-gray-900 mb-4 block">Project Name</label>
                 <Input
                   value={formData.project_name}
                   onChange={(e) => handleInputChange('project_name', e.target.value)}
                   placeholder="Enter project name"
-                  className="mt-1"
+                  className="border-gray-200 focus:border-gray-400 focus:ring-0 h-12 text-base"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Technologies Used</label>
+                <label className="text-base font-medium text-gray-900 mb-4 block">Technologies Used</label>
                 <Input
                   value={formData.technologies_used?.join(', ')}
                   onChange={(e) => handleInputChange('technologies_used', e.target.value.split(', '))}
                   placeholder="React, Node.js, PostgreSQL..."
-                  className="mt-1"
+                  className="border-gray-200 focus:border-gray-400 focus:ring-0 h-12 text-base"
                 />
               </div>
-              {renderMoodSlider('Project Satisfaction', 'project_satisfaction', <Target className="h-4 w-4" />, 'bg-blue-100')}
-              {renderMoodSlider('Collaboration Rating', 'collaboration_rating', <Heart className="h-4 w-4" />, 'bg-green-100')}
+              <div className="space-y-1">
+                {renderMoodSlider('Project Satisfaction', 'project_satisfaction', <Target className="h-5 w-5" />, '')}
+                {renderMoodSlider('Collaboration Rating', 'collaboration_rating', <Heart className="h-5 w-5" />, '')}
+              </div>
             </div>
           )}
 
-          {/* Gratitude - Always shown */}
           <div>
-            <label className="text-sm font-medium">Gratitude</label>
+            <label className="text-base font-medium text-gray-900 mb-4 block">Gratitude</label>
             <Textarea
               value={formData.gratitude}
               onChange={(e) => handleInputChange('gratitude', e.target.value)}
               placeholder="What are you grateful for today?"
-              className="mt-1"
+              className="border-gray-200 focus:border-gray-400 focus:ring-0 min-h-[100px] text-base resize-none"
             />
           </div>
 
           {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
           )}
 
           {success && (
-            <Alert>
-              <AlertDescription>{success}</AlertDescription>
-            </Alert>
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-700">{success}</p>
+            </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Save Reflection
-              </>
-            )}
-          </Button>
+          <div className="pt-8 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gray-900 text-white py-4 rounded-lg font-medium text-base hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </span>
+              ) : (
+                'Save Reflection'
+              )}
+            </button>
+          </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
   )
 }
