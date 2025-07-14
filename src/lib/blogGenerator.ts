@@ -1,6 +1,21 @@
 import { supabase, supabaseAdmin } from './supabase'
-import { Reflection, BlogPost } from '@/types'
-import { analyzeSentiment, extractKeywords } from './sentiment'
+import { Reflection, BlogPost, User } from '@/types'
+
+// Extended types for blog generation
+interface ReflectionWithUser extends Reflection {
+  users: Pick<User, 'name' | 'email'> | null
+}
+
+interface ReflectionInsights {
+  totalReflections: number
+  avgMood: number
+  avgSentiment: number
+  typeDistribution: Record<string, number>
+  topKeywords: string[]
+  moodTrend: number
+  challenges: string[]
+  successes: string[]
+}
 
 export class BlogGenerator {
   static async generateBlogPost(
@@ -46,13 +61,14 @@ export class BlogGenerator {
       }
 
       return { post: blogPost }
-    } catch (error) {
+    } catch (err) {
+      console.error('Blog generation failed:', err)
       return { post: {} as BlogPost, error: 'Failed to generate blog post' }
     }
   }
 
   private static async generateContent(
-    reflections: any[],
+    reflections: ReflectionWithUser[],
     theme: string,
     includeQuotes: boolean,
     anonymize: boolean
@@ -77,7 +93,7 @@ export class BlogGenerator {
     return { title, content, excerpt }
   }
 
-  private static analyzeReflections(reflections: any[]) {
+  private static analyzeReflections(reflections: ReflectionWithUser[]): ReflectionInsights {
     const totalReflections = reflections.length
     const avgMood = reflections.reduce((sum, r) => sum + (r.mood_score || 0), 0) / totalReflections
     const avgSentiment = reflections.reduce((sum, r) => sum + (r.sentiment_score || 0), 0) / totalReflections
@@ -119,7 +135,7 @@ export class BlogGenerator {
     }
   }
 
-  private static generateTitle(theme: string, insights: any): string {
+  private static generateTitle(theme: string, insights: ReflectionInsights): string {
     const titles = {
       'weekly-recap': `Weekly Bootcamp Insights: ${insights.moodTrend > 0 ? 'Rising' : 'Steady'} Progress`,
       'mood-trends': `Mood Trends in Bootcamp: ${insights.avgMood > 7 ? 'Positive' : insights.avgMood > 4 ? 'Balanced' : 'Challenging'} Journey`,
@@ -132,7 +148,7 @@ export class BlogGenerator {
     return titles[theme as keyof typeof titles] || `Bootcamp Reflections: ${theme}`
   }
 
-  private static generateIntroduction(theme: string, insights: any): string {
+  private static generateIntroduction(theme: string, insights: ReflectionInsights): string {
     const intros = {
       'weekly-recap': `This week, our bootcamp community shared ${insights.totalReflections} reflections, painting a picture of dedication, growth, and resilience. Here's what we learned from our collective journey.`,
       'mood-trends': `Understanding the emotional journey of learning to code is crucial for success. Our analysis of recent reflections reveals important patterns about mood and motivation during the bootcamp experience.`,
@@ -146,9 +162,9 @@ export class BlogGenerator {
   }
 
   private static generateMainContent(
-    reflections: any[],
+    reflections: ReflectionWithUser[],
     theme: string,
-    insights: any,
+    insights: ReflectionInsights,
     includeQuotes: boolean,
     anonymize: boolean
   ): string {
@@ -179,14 +195,15 @@ export class BlogGenerator {
       content += `## Community Voices\n\n`
       const quotes = this.extractAnonymousQuotes(reflections).slice(0, 3)
       quotes.forEach(quote => {
-        content += `> "${quote}"\n>\n> — Anonymous Community Member\n\n`
+        const attribution = anonymize ? 'Anonymous Community Member' : 'Community Member'
+        content += `> "${quote}"\n>\n> — ${attribution}\n\n`
       })
     }
     
     return content
   }
 
-  private static generateInsightsSection(insights: any): string {
+  private static generateInsightsSection(insights: ReflectionInsights): string {
     let content = `## Key Insights\n\n`
     
     // Mood insights
@@ -215,7 +232,7 @@ export class BlogGenerator {
     return content
   }
 
-  private static generateConclusion(insights: any): string {
+  private static generateConclusion(insights: ReflectionInsights): string {
     let conclusion = `## Looking Forward\n\n`
     
     if (insights.avgMood > 6) {
@@ -243,7 +260,7 @@ export class BlogGenerator {
     return cleanText.length > 200 ? cleanText.substring(0, 200) + '...' : cleanText
   }
 
-  private static extractAnonymousQuotes(reflections: any[]): string[] {
+  private static extractAnonymousQuotes(reflections: ReflectionWithUser[]): string[] {
     const quotes: string[] = []
     
     reflections.forEach(reflection => {
@@ -274,7 +291,7 @@ export class BlogGenerator {
       .slice(0, 10)
   }
 
-  private static generateTags(content: string, reflections: any[]): string[] {
+  private static generateTags(content: string, reflections: ReflectionWithUser[]): string[] {
     const tags: string[] = []
     
     // Content-based tags
@@ -312,13 +329,14 @@ export class BlogGenerator {
     return secondAvg - firstAvg
   }
 
-  private static extractCommonThemes(reflections: any[], field: string): string[] {
+  private static extractCommonThemes(reflections: ReflectionWithUser[], field: string): string[] {
     const themes: string[] = []
     
     reflections.forEach(reflection => {
-      const content = reflection.content[field]
-      if (content && typeof content === 'string') {
-        themes.push(content)
+      const content = reflection.content as unknown as Record<string, unknown>
+      const fieldValue = content[field]
+      if (fieldValue && typeof fieldValue === 'string') {
+        themes.push(fieldValue)
       }
     })
     
@@ -338,7 +356,8 @@ export class BlogGenerator {
       }
 
       return { data }
-    } catch (error) {
+    } catch (err) {
+      console.error('Failed to save blog post:', err)
       return { error: 'Failed to save blog post' }
     }
   }
@@ -355,7 +374,8 @@ export class BlogGenerator {
       }
 
       return { success: true }
-    } catch (error) {
+    } catch (err) {
+      console.error('Failed to publish blog post:', err)
       return { error: 'Failed to publish blog post' }
     }
   }
@@ -372,7 +392,8 @@ export class BlogGenerator {
       }
 
       return { data: data || [] }
-    } catch (error) {
+    } catch (err) {
+      console.error('Failed to fetch blog posts:', err)
       return { error: 'Failed to fetch blog posts' }
     }
   }
@@ -390,7 +411,8 @@ export class BlogGenerator {
       }
 
       return { data: data || [] }
-    } catch (error) {
+    } catch (err) {
+      console.error('Failed to fetch published blog posts:', err)
       return { error: 'Failed to fetch published blog posts' }
     }
   }

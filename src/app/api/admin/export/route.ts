@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
         y += 8
         doc.text(`   User: ${reflection.user_name} | Type: ${reflection.type} | Mood: ${reflection.mood_score}/10`, 25, y)
         y += 8
-        if (reflection.daily_highlight) {
+        if (reflection.daily_highlight && typeof reflection.daily_highlight === 'string') {
           doc.text(`   Highlight: ${reflection.daily_highlight.substring(0, 100)}${reflection.daily_highlight.length > 100 ? '...' : ''}`, 25, y)
           y += 8
         }

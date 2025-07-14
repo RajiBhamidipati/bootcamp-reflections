@@ -1,62 +1,51 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Use environment variables - throw error if not set
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+// Environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
 
-// Clean and validate the URL
-const cleanUrl = supabaseUrl?.trim()
-const cleanKey = supabaseAnonKey?.trim()
-
-// Debug log for environment variables (including build time)
-console.log('=== Supabase Config Debug ===')
-console.log('NODE_ENV:', process.env.NODE_ENV)
-console.log('VERCEL:', process.env.VERCEL)
-console.log('Supabase URL exists:', !!supabaseUrl)
-console.log('Supabase Key exists:', !!supabaseAnonKey)
-console.log('Clean URL:', cleanUrl || 'MISSING')
-console.log('Clean Key length:', cleanKey?.length || 'MISSING')
-console.log('==============================')
-
-// Validate configuration - but allow build time to proceed
-if (!cleanUrl || !cleanKey) {
-  console.error('Missing Supabase configuration!')
-  console.error('URL:', cleanUrl)
-  console.error('Key:', cleanKey ? 'Present' : 'Missing')
+// Validate required environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  const missing = []
+  if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL')
+  if (!supabaseAnonKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY')
   
-  // During any build process (CI, local, or Vercel), use fallback values
-  // Only throw error when actually running in production with users
-  const isRuntimeProduction = process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
-  
-  if (isRuntimeProduction) {
-    throw new Error('Supabase configuration is invalid')
-  }
-  
-  // Provide fallback values for build time and server-side rendering
-  console.warn('Using fallback Supabase configuration for build/SSR')
+  throw new Error(
+    `Missing required Supabase environment variables: ${missing.join(', ')}\n` +
+    'Please check your .env.local file or deployment environment settings.'
+  )
 }
 
-// Validate URL format - only if URL exists and not during build
-if (cleanUrl) {
-  try {
-    new URL(cleanUrl)
-  } catch {
-    console.error('Invalid Supabase URL:', cleanUrl)
-    const isRuntimeProduction = process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
-    if (isRuntimeProduction) {
-      throw new Error('Invalid Supabase URL format')
-    }
-  }
+// Validate URL format
+try {
+  new URL(supabaseUrl)
+} catch (err) {
+  throw new Error(
+    `Invalid Supabase URL format: ${supabaseUrl}\n` +
+    'Please check your NEXT_PUBLIC_SUPABASE_URL environment variable.\n' +
+    `Error details: ${err instanceof Error ? err.message : 'Unknown error'}`
+  )
 }
 
-// Use fallback values for build time if needed
-const buildUrl = cleanUrl || 'https://placeholder.supabase.co'
-const buildKey = cleanKey || 'placeholder-key'
-const buildServiceKey = supabaseServiceRoleKey || 'placeholder-service-key'
+// Validate service role key for server-side operations
+if (!supabaseServiceRoleKey) {
+  console.warn(
+    'SUPABASE_SERVICE_ROLE_KEY is not set. Server-side admin operations will not work.'
+  )
+}
 
-// Client-side Supabase client with minimal configuration
-export const supabase = createClient(buildUrl, buildKey, {
+// Development logging
+if (process.env.NODE_ENV === 'development') {
+  console.log('Supabase configured:', {
+    url: supabaseUrl,
+    anonKeyLength: supabaseAnonKey.length,
+    serviceRoleKeySet: !!supabaseServiceRoleKey
+  })
+}
+
+// Client-side Supabase client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
@@ -65,12 +54,16 @@ export const supabase = createClient(buildUrl, buildKey, {
 })
 
 // Admin client with service role key (for API routes only)
-export const supabaseAdmin = createClient(buildUrl, buildServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
+export const supabaseAdmin = createClient(
+  supabaseUrl,
+  supabaseServiceRoleKey || supabaseAnonKey, // Fallback to anon key if service role not available
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
   }
-})
+)
 
 // Database types for better TypeScript support
 export type Database = {

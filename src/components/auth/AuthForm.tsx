@@ -2,10 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Alert, AlertDescription } from '@/components/ui/Alert'
 import { Loader2, Mail, Lock, User } from 'lucide-react'
 
 interface AuthFormProps {

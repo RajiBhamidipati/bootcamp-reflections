@@ -5,7 +5,6 @@ import AuthForm from '@/components/auth/AuthForm'
 import UserDashboard from '@/components/dashboard/UserDashboard'
 import AdminDashboard from '@/components/admin/AdminDashboard'
 import { useState } from 'react'
-import { Button } from '@/components/ui/Button'
 import { Heart, LogOut, User } from 'lucide-react'
 
 export default function Home() {

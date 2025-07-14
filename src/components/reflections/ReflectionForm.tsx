@@ -5,14 +5,11 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { ReflectionContent } from '@/types'
 import { analyzeSentiment, extractKeywords } from '@/lib/sentiment'
-import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Alert, AlertDescription } from '@/components/ui/Alert'
 import { Textarea } from '@/components/ui/Textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { Slider } from '@/components/ui/Slider'
-import { Loader2, Save, Heart, Brain, Zap, Target } from 'lucide-react'
+import { Loader2, Heart, Brain, Zap, Target } from 'lucide-react'
 
 interface ReflectionFormProps {
   type: 'daily' | 'weekly' | 'project' | 'mood'
@@ -26,7 +23,7 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
   const [success, setSuccess] = useState<string | null>(null)
   
   const [formData, setFormData] = useState<ReflectionContent>({
-    phase: 'bootcamp-day',
+    phase: 'week-1-8',
     overall_mood: 5,
     energy_level: 5,
     stress_level: 5,
@@ -107,7 +104,7 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
       
       // Reset form
       setFormData({
-        phase: 'bootcamp-day',
+        phase: 'week-1-8',
         overall_mood: 5,
         energy_level: 5,
         stress_level: 5,
@@ -155,8 +152,7 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
   const renderMoodSlider = (
     label: string,
     field: keyof ReflectionContent,
-    icon: React.ReactNode,
-    color: string
+    icon: React.ReactNode
   ) => (
     <div className="space-y-4 py-6 border-b border-gray-100 last:border-b-0">
       <div className="flex items-center justify-between">
@@ -219,10 +215,10 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
           <div className="space-y-1 relative z-10">
             <h2 className="text-xl font-light text-gray-900 mb-8">How are you feeling?</h2>
             <div className="space-y-1">
-              {renderMoodSlider('Overall Mood', 'overall_mood', <Heart className="h-5 w-5" />, '')}
-              {renderMoodSlider('Energy Level', 'energy_level', <Zap className="h-5 w-5" />, '')}
-              {renderMoodSlider('Stress Level', 'stress_level', <Brain className="h-5 w-5" />, '')}
-              {renderMoodSlider('Motivation', 'motivation', <Target className="h-5 w-5" />, '')}
+              {renderMoodSlider('Overall Mood', 'overall_mood', <Heart className="h-5 w-5" />)}
+              {renderMoodSlider('Energy Level', 'energy_level', <Zap className="h-5 w-5" />)}
+              {renderMoodSlider('Stress Level', 'stress_level', <Brain className="h-5 w-5" />)}
+              {renderMoodSlider('Motivation', 'motivation', <Target className="h-5 w-5" />)}
             </div>
           </div>
 
@@ -328,8 +324,8 @@ export default function ReflectionForm({ type, onSubmit }: ReflectionFormProps) 
                 />
               </div>
               <div className="space-y-1">
-                {renderMoodSlider('Project Satisfaction', 'project_satisfaction', <Target className="h-5 w-5" />, '')}
-                {renderMoodSlider('Collaboration Rating', 'collaboration_rating', <Heart className="h-5 w-5" />, '')}
+                {renderMoodSlider('Project Satisfaction', 'project_satisfaction', <Target className="h-5 w-5" />)}
+                {renderMoodSlider('Collaboration Rating', 'collaboration_rating', <Heart className="h-5 w-5" />)}
               </div>
             </div>
           )}

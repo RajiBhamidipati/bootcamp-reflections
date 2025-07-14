@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Reflection, AnalyticsData } from '@/types'
@@ -20,13 +20,7 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState('30')
 
-  useEffect(() => {
-    if (user) {
-      fetchData()
-    }
-  }, [user, timeRange])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -66,7 +60,13 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, timeRange])
+
+  useEffect(() => {
+    if (user) {
+      fetchData()
+    }
+  }, [user, fetchData])
 
   const handleExport = async () => {
     try {

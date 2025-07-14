@@ -88,7 +88,7 @@ export default function SentimentChart({ data, title = 'Sentiment Analysis', hei
       },
       tooltip: {
         callbacks: {
-          label: function(context: { dataset: { label: string }; parsed: { y: number } }) {
+          label: function(context: { dataset: { label?: string }; parsed: { y: number } }) {
             const value = context.parsed.y
             let sentiment = 'Neutral'
             if (value > 0.3) sentiment = 'Very Positive'
@@ -96,7 +96,7 @@ export default function SentimentChart({ data, title = 'Sentiment Analysis', hei
             else if (value > -0.3) sentiment = 'Negative'
             else sentiment = 'Very Negative'
             
-            return `${context.dataset.label}: ${value.toFixed(3)} (${sentiment})`
+            return `${context.dataset.label || ''}: ${value.toFixed(3)} (${sentiment})`
           }
         }
       }

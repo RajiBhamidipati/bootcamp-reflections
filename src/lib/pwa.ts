@@ -21,7 +21,7 @@ export class PWAManager {
     // Listen for the beforeinstallprompt event
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault()
-      this.deferredPrompt = event as any
+      this.deferredPrompt = event as unknown as PWAInstallPrompt
       this.isInstallable = true
       this.dispatchInstallableEvent()
     })
@@ -49,7 +49,7 @@ export class PWAManager {
     }
 
     // Check if running in PWA mode
-    if ((window.navigator as any).standalone === true) {
+    if ((window.navigator as Navigator & { standalone?: boolean }).standalone === true) {
       this.isInstalled = true
     }
   }
@@ -289,7 +289,7 @@ export class OfflineStorage {
   private static readonly STORAGE_KEY = 'bootcamp-reflections-offline'
   private static readonly VERSION = '1.0.0'
 
-  static saveData(key: string, data: any) {
+  static saveData(key: string, data: unknown) {
     try {
       const storageData = this.getStorageData()
       storageData[key] = {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Reflection, AnalyticsData } from '@/types'
@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { formatDate, formatDateTime, getRelativeTime } from '@/lib/utils'
+import { formatDate, getRelativeTime } from '@/lib/utils'
 import { generateInsights } from '@/lib/sentiment'
 import { Calendar, TrendingUp, Heart, Brain, Zap, Target, Plus, BookOpen, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
@@ -20,14 +20,7 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true)
   const [insights, setInsights] = useState<string[]>([])
 
-  useEffect(() => {
-    if (user) {
-      fetchReflections()
-      fetchAnalytics()
-    }
-  }, [user])
-
-  const fetchReflections = async () => {
+  const fetchReflections = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('reflections')
@@ -45,9 +38,9 @@ export default function UserDashboard() {
     } catch (error) {
       console.error('Error fetching reflections:', error)
     }
-  }
+  }, [user])
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('analytics')
@@ -66,7 +59,14 @@ export default function UserDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchReflections()
+      fetchAnalytics()
+    }
+  }, [user, fetchReflections, fetchAnalytics])
 
   const getRecentAnalytics = () => {
     const recent = analytics.slice(0, 7)

@@ -4,11 +4,20 @@ import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Reflection, AnalyticsData, User } from '@/types'
+
+// Extended types for admin dashboard with joins
+interface ReflectionWithUser extends Reflection {
+  users: Pick<User, 'name' | 'email'> | null
+}
+
+interface AnalyticsWithUser extends AnalyticsData {
+  users: Pick<User, 'name' | 'email'> | null
+}
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatDateTime } from '@/lib/utils'
 import { 
   Users, 
   BookOpen, 
@@ -34,18 +43,12 @@ export default function AdminDashboard() {
     activeUsers: 0
   })
   const [users, setUsers] = useState<User[]>([])
-  const [reflections, setReflections] = useState<Reflection[]>([])
-  const [analytics, setAnalytics] = useState<AnalyticsData[]>([])
+  const [reflections, setReflections] = useState<ReflectionWithUser[]>([])
+  const [analytics, setAnalytics] = useState<AnalyticsWithUser[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<string>('all')
   const [timeRange, setTimeRange] = useState<string>('30')
-
-  useEffect(() => {
-    if (user?.role === 'admin') {
-      fetchAdminData()
-    }
-  }, [user, fetchAdminData])
 
   const fetchAdminData = useCallback(async () => {
     try {
@@ -61,6 +64,12 @@ export default function AdminDashboard() {
       setLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      fetchAdminData()
+    }
+  }, [user, fetchAdminData])
 
   const fetchStats = async () => {
     try {
@@ -377,7 +386,7 @@ export default function AdminDashboard() {
                             {reflection.type}
                           </Badge>
                           <span className="text-sm text-gray-500">
-                            {(reflection as any).users?.name || 'Unknown User'}
+                            {reflection.users?.name || 'Unknown User'}
                           </span>
                           <span className="text-sm text-gray-500">
                             {formatDateTime(reflection.created_at)}
@@ -465,7 +474,7 @@ export default function AdminDashboard() {
                     <div key={data.id} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium">{(data as any).users?.name || 'Unknown User'}</p>
+                          <p className="font-medium">{data.users?.name || 'Unknown User'}</p>
                           <p className="text-sm text-gray-600">{formatDate(data.date)}</p>
                         </div>
                         <div className="text-right">

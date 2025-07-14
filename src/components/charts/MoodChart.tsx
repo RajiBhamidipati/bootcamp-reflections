@@ -104,8 +104,8 @@ export default function MoodChart({ data, title = 'Mood Trends', height = 400 }:
       },
       tooltip: {
         callbacks: {
-          label: function(context: { dataset: { label: string }; parsed: { y: number } }) {
-            return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}/10`
+          label: function(context: { dataset: { label?: string }; parsed: { y: number } }) {
+            return `${context.dataset.label || ''}: ${context.parsed.y.toFixed(1)}/10`
           }
         }
       }

@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { User } from '@/types'
@@ -26,59 +26,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const [initialCheckDone, setInitialCheckDone] = useState(false)
 
-  useEffect(() => {
-    // Set a timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      console.warn('Auth loading timeout, setting loading to false')
-      setLoading(false)
-      setInitialCheckDone(true)
-    }, 1000) // Very aggressive timeout - 1 second
-
-    // Immediately try to get session, but don't wait for it
-    const getSessionAsync = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        setSupabaseUser(session?.user ?? null)
-        setInitialCheckDone(true)
-        if (session?.user) {
-          fetchUserProfile(session.user.id)
-        } else {
-          setLoading(false)
-        }
-        clearTimeout(timeout)
-      } catch (error) {
-        console.error('Error getting session:', error)
-        setInitialCheckDone(true)
-        setLoading(false)
-        clearTimeout(timeout)
-      }
-    }
-
-    getSessionAsync()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSupabaseUser(session?.user ?? null)
-        
-        if (session?.user) {
-          await fetchUserProfile(session.user.id)
-        } else {
-          setUser(null)
-          setLoading(false)
-        }
-      }
-    )
-
-    return () => {
-      subscription.unsubscribe()
-      clearTimeout(timeout)
-    }
-  }, [])
-
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = useCallback(async (userId: string) => {
     // Set a timeout for this specific operation
     const profileTimeout = setTimeout(() => {
       console.warn('Profile fetch timeout, using fallback user')
@@ -138,7 +87,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabaseUser])
+
+  useEffect(() => {
+    // Set a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      console.warn('Auth loading timeout, setting loading to false')
+      setLoading(false)
+    }, 1000) // Very aggressive timeout - 1 second
+
+    // Immediately try to get session, but don't wait for it
+    const getSessionAsync = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setSupabaseUser(session?.user ?? null)
+          if (session?.user) {
+          fetchUserProfile(session.user.id)
+        } else {
+          setLoading(false)
+        }
+        clearTimeout(timeout)
+      } catch (error) {
+        console.error('Error getting session:', error)
+          setLoading(false)
+        clearTimeout(timeout)
+      }
+    }
+
+    getSessionAsync()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSupabaseUser(session?.user ?? null)
+        
+        if (session?.user) {
+          await fetchUserProfile(session.user.id)
+        } else {
+          setUser(null)
+          setLoading(false)
+        }
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
+  }, [fetchUserProfile])
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()

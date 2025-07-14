@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Reflection, AnalyticsData, NotificationData } from '@/types'
@@ -9,6 +9,55 @@ export function useRealTimeReflections() {
   const { user } = useAuth()
   const [reflections, setReflections] = useState<Reflection[]>([])
   const [loading, setLoading] = useState(true)
+
+  const fetchReflections = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('reflections')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(50)
+
+      if (error) {
+        console.error('Error fetching reflections:', error)
+      } else {
+        setReflections(data || [])
+      }
+    } catch (error) {
+      console.error('Error fetching reflections:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  const handleRealTimeUpdate = useCallback((payload: { eventType: string; new?: unknown; old?: unknown }) => {
+    switch (payload.eventType) {
+      case 'INSERT':
+        if (payload.new) {
+          setReflections(prev => [payload.new as Reflection, ...prev])
+        }
+        break
+      case 'UPDATE':
+        if (payload.new) {
+          const newReflection = payload.new as Reflection
+          setReflections(prev => 
+            prev.map(reflection => 
+              reflection.id === newReflection.id ? newReflection : reflection
+            )
+          )
+        }
+        break
+      case 'DELETE':
+        if (payload.old) {
+          const oldReflection = payload.old as Reflection
+          setReflections(prev => 
+            prev.filter(reflection => reflection.id !== oldReflection.id)
+          )
+        }
+        break
+    }
+  }, [])
 
   useEffect(() => {
     if (!user) return
@@ -36,48 +85,7 @@ export function useRealTimeReflections() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [user, fetchReflections])
-
-  const fetchReflections = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('reflections')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(50)
-
-      if (error) {
-        console.error('Error fetching reflections:', error)
-      } else {
-        setReflections(data || [])
-      }
-    } catch (error) {
-      console.error('Error fetching reflections:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleRealTimeUpdate = (payload: { eventType: string; new: Reflection; old: Reflection }) => {
-    switch (payload.eventType) {
-      case 'INSERT':
-        setReflections(prev => [payload.new, ...prev])
-        break
-      case 'UPDATE':
-        setReflections(prev => 
-          prev.map(reflection => 
-            reflection.id === payload.new.id ? payload.new : reflection
-          )
-        )
-        break
-      case 'DELETE':
-        setReflections(prev => 
-          prev.filter(reflection => reflection.id !== payload.old.id)
-        )
-        break
-    }
-  }
+  }, [user, fetchReflections, handleRealTimeUpdate])
 
   const addReflection = async (reflection: Omit<Reflection, 'id' | 'created_at' | 'updated_at'>) => {
     try {
@@ -154,6 +162,55 @@ export function useRealTimeAnalytics() {
   const [analytics, setAnalytics] = useState<AnalyticsData[]>([])
   const [loading, setLoading] = useState(true)
 
+  const fetchAnalytics = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('analytics')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('date', { ascending: false })
+        .limit(365)
+
+      if (error) {
+        console.error('Error fetching analytics:', error)
+      } else {
+        setAnalytics(data || [])
+      }
+    } catch (error) {
+      console.error('Error fetching analytics:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  const handleRealTimeUpdate = useCallback((payload: { eventType: string; new?: unknown; old?: unknown }) => {
+    switch (payload.eventType) {
+      case 'INSERT':
+        if (payload.new) {
+          setAnalytics(prev => [payload.new as AnalyticsData, ...prev])
+        }
+        break
+      case 'UPDATE':
+        if (payload.new) {
+          const newAnalytics = payload.new as AnalyticsData
+          setAnalytics(prev => 
+            prev.map(analytics => 
+              analytics.id === newAnalytics.id ? newAnalytics : analytics
+            )
+          )
+        }
+        break
+      case 'DELETE':
+        if (payload.old) {
+          const oldAnalytics = payload.old as AnalyticsData
+          setAnalytics(prev => 
+            prev.filter(analytics => analytics.id !== oldAnalytics.id)
+          )
+        }
+        break
+    }
+  }, [])
+
   useEffect(() => {
     if (!user) return
 
@@ -180,48 +237,7 @@ export function useRealTimeAnalytics() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [user, fetchReflections])
-
-  const fetchAnalytics = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('analytics')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('date', { ascending: false })
-        .limit(365)
-
-      if (error) {
-        console.error('Error fetching analytics:', error)
-      } else {
-        setAnalytics(data || [])
-      }
-    } catch (error) {
-      console.error('Error fetching analytics:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleRealTimeUpdate = (payload: { eventType: string; new: AnalyticsData; old: AnalyticsData }) => {
-    switch (payload.eventType) {
-      case 'INSERT':
-        setAnalytics(prev => [payload.new, ...prev])
-        break
-      case 'UPDATE':
-        setAnalytics(prev => 
-          prev.map(analytics => 
-            analytics.id === payload.new.id ? payload.new : analytics
-          )
-        )
-        break
-      case 'DELETE':
-        setAnalytics(prev => 
-          prev.filter(analytics => analytics.id !== payload.old.id)
-        )
-        break
-    }
-  }
+  }, [user, fetchAnalytics, handleRealTimeUpdate])
 
   return {
     analytics,
@@ -235,6 +251,77 @@ export function useRealTimeNotifications() {
   const [notifications, setNotifications] = useState<NotificationData[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(50)
+
+      if (error) {
+        console.error('Error fetching notifications:', error)
+      } else {
+        setNotifications(data || [])
+        setUnreadCount(data?.filter(n => !n.read).length || 0)
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  const handleRealTimeUpdate = useCallback((payload: { eventType: string; new?: unknown; old?: unknown }) => {
+    switch (payload.eventType) {
+      case 'INSERT':
+        if (payload.new) {
+          const newNotification = payload.new as NotificationData
+          setNotifications(prev => [newNotification, ...prev])
+          if (!newNotification.read) {
+            setUnreadCount(prev => prev + 1)
+          }
+        }
+        break
+      case 'UPDATE':
+        if (payload.new) {
+          const newNotification = payload.new as NotificationData
+          setNotifications(prev => 
+            prev.map(notification => 
+              notification.id === newNotification.id ? newNotification : notification
+            )
+          )
+          // Recalculate unread count
+          if (payload.old) {
+            const oldNotification = payload.old as NotificationData
+            setUnreadCount(prev => {
+              // Check if read status changed
+              if (!oldNotification.read && newNotification.read) {
+                return prev - 1
+              }
+              if (oldNotification.read && !newNotification.read) {
+                return prev + 1
+              }
+              return prev
+            })
+          }
+        }
+        break
+      case 'DELETE':
+        if (payload.old) {
+          const oldNotification = payload.old as NotificationData
+          setNotifications(prev => 
+            prev.filter(notification => notification.id !== oldNotification.id)
+          )
+          if (!oldNotification.read) {
+            setUnreadCount(prev => prev - 1)
+          }
+        }
+        break
+    }
+  }, [])
 
   useEffect(() => {
     if (!user) return
@@ -262,66 +349,7 @@ export function useRealTimeNotifications() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [user, fetchReflections])
-
-  const fetchNotifications = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(50)
-
-      if (error) {
-        console.error('Error fetching notifications:', error)
-      } else {
-        setNotifications(data || [])
-        setUnreadCount(data?.filter(n => !n.read).length || 0)
-      }
-    } catch (error) {
-      console.error('Error fetching notifications:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleRealTimeUpdate = (payload: { eventType: string; new: NotificationData; old: NotificationData }) => {
-    switch (payload.eventType) {
-      case 'INSERT':
-        setNotifications(prev => [payload.new, ...prev])
-        if (!payload.new.read) {
-          setUnreadCount(prev => prev + 1)
-        }
-        break
-      case 'UPDATE':
-        setNotifications(prev => 
-          prev.map(notification => 
-            notification.id === payload.new.id ? payload.new : notification
-          )
-        )
-        // Recalculate unread count
-        setUnreadCount(prev => {
-          // Check if read status changed
-          if (!payload.old.read && payload.new.read) {
-            return prev - 1
-          }
-          if (payload.old.read && !payload.new.read) {
-            return prev + 1
-          }
-          return prev
-        })
-        break
-      case 'DELETE':
-        setNotifications(prev => 
-          prev.filter(notification => notification.id !== payload.old.id)
-        )
-        if (!payload.old.read) {
-          setUnreadCount(prev => prev - 1)
-        }
-        break
-    }
-  }
+  }, [user, fetchNotifications, handleRealTimeUpdate])
 
   const markAsRead = async (id: string) => {
     try {

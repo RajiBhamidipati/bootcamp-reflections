@@ -1,5 +1,5 @@
-import { SentimentAnalysis } from '@/types'
-// @ts-expect-error
+import { SentimentAnalysis, Reflection } from '@/types'
+// @ts-expect-error - sentiment package doesn't have TypeScript declarations
 import Sentiment from 'sentiment'
 
 const sentiment = new Sentiment()
@@ -11,7 +11,7 @@ export function analyzeSentiment(text: string): SentimentAnalysis {
   const normalizedScore = Math.max(-1, Math.min(1, result.score / 10))
   
   // Calculate basic emotions based on keywords and patterns
-  const emotions = calculateEmotions(text, result.tokens)
+  const emotions = calculateEmotions(text)
   
   return {
     score: normalizedScore,
@@ -20,7 +20,7 @@ export function analyzeSentiment(text: string): SentimentAnalysis {
   }
 }
 
-function calculateEmotions(text: string, _tokens: unknown[]): SentimentAnalysis['emotions'] {
+function calculateEmotions(text: string): SentimentAnalysis['emotions'] {
   const lowerText = text.toLowerCase()
   
   // Basic emotion keywords
@@ -94,7 +94,7 @@ export function extractKeywords(text: string): string[] {
     .map(([word]) => word)
 }
 
-export function generateInsights(reflections: any[]): string[] {
+export function generateInsights(reflections: Reflection[]): string[] {
   const insights: string[] = []
   
   if (reflections.length === 0) return insights
